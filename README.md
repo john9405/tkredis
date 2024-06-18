@@ -1,1 +1,5 @@
 # tkredis
+
+```
+pip install redis
+```
