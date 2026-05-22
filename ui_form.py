@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'form.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.3
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QHeaderView, QPushButton,
-    QSizePolicy, QSpacerItem, QSplitter, QTabWidget,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QHeaderView, QLabel,
+    QPushButton, QSizePolicy, QSpacerItem, QSplitter,
+    QTabWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget)
 
 class Ui_Widget(object):
     def setupUi(self, Widget):
@@ -60,7 +61,7 @@ class Ui_Widget(object):
         self.splitter.setOrientation(Qt.Orientation.Horizontal)
         self.treeWidget = QTreeWidget(self.splitter)
         __qtreewidgetitem = QTreeWidgetItem()
-        __qtreewidgetitem.setText(0, u"1");
+        __qtreewidgetitem.setText(0, u"1")
         self.treeWidget.setHeaderItem(__qtreewidgetitem)
         self.treeWidget.setObjectName(u"treeWidget")
         self.treeWidget.setMinimumSize(QSize(100, 0))
@@ -81,6 +82,18 @@ class Ui_Widget(object):
 
         self.verticalLayout.addWidget(self.splitter)
 
+        self.statusLabel = QLabel(Widget)
+        self.statusLabel.setObjectName(u"statusLabel")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.statusLabel.sizePolicy().hasHeightForWidth())
+        self.statusLabel.setSizePolicy(sizePolicy)
+        self.statusLabel.setMinimumSize(QSize(0, 25))
+        self.statusLabel.setStyleSheet(u"QLabel { background-color: #f0f0f0; padding: 5px; }")
+
+        self.verticalLayout.addWidget(self.statusLabel)
+
 
         self.retranslateUi(Widget)
 
@@ -97,5 +110,6 @@ class Ui_Widget(object):
         self.pushButton_2.setText(QCoreApplication.translate("Widget", u"\u5173\u4e8e", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("Widget", u"Tab 1", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Widget", u"Tab 2", None))
+        self.statusLabel.setText(QCoreApplication.translate("Widget", u"\u5c31\u7eea", None))
     # retranslateUi
 

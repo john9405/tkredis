@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>600</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,17 +24,32 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
+      <widget class="QPushButton" name="refreshBtn">
+       <property name="text">
+        <string>刷新</string>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="searchEdit">
+       <property name="placeholderText">
+        <string>搜索键...</string>
        </property>
-      </spacer>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="searchBtn">
+       <property name="text">
+        <string>搜索</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="clearBtn">
+       <property name="text">
+        <string>清除</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -111,15 +126,25 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QPushButton" name="home">
        <property name="maximumSize">
         <size>
          <width>30</width>
          <height>16777215</height>
         </size>
-       </property>
-       <property name="statusTip">
-        <string comment="第一页"/>
        </property>
        <property name="text">
         <string>&lt;&lt;</string>
@@ -134,9 +159,6 @@
          <height>16777215</height>
         </size>
        </property>
-       <property name="statusTip">
-        <string comment="上一页"/>
-       </property>
        <property name="text">
         <string>&lt;</string>
        </property>
@@ -150,9 +172,6 @@
          <height>16777215</height>
         </size>
        </property>
-       <property name="statusTip">
-        <string comment="下一页"/>
-       </property>
        <property name="text">
         <string>&gt;</string>
        </property>
@@ -165,9 +184,6 @@
          <width>30</width>
          <height>16777215</height>
         </size>
-       </property>
-       <property name="statusTip">
-        <string comment="最后一页"/>
        </property>
        <property name="text">
         <string>&gt;&gt;</string>

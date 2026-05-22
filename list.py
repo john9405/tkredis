@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'list.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.3
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,14 +16,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QHBoxLayout, QHeaderView, QLabel,
-    QPushButton, QSizePolicy, QSpacerItem, QSpinBox,
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
+    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
+    QSpinBox, QTableWidget, QTableWidgetItem, QVBoxLayout,
+    QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(400, 300)
+        Form.resize(600, 400)
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout_2 = QHBoxLayout()
@@ -33,9 +34,25 @@ class Ui_Form(object):
 
         self.horizontalLayout_2.addWidget(self.add)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.refreshBtn = QPushButton(Form)
+        self.refreshBtn.setObjectName(u"refreshBtn")
 
-        self.horizontalLayout_2.addItem(self.horizontalSpacer)
+        self.horizontalLayout_2.addWidget(self.refreshBtn)
+
+        self.searchEdit = QLineEdit(Form)
+        self.searchEdit.setObjectName(u"searchEdit")
+
+        self.horizontalLayout_2.addWidget(self.searchEdit)
+
+        self.searchBtn = QPushButton(Form)
+        self.searchBtn.setObjectName(u"searchBtn")
+
+        self.horizontalLayout_2.addWidget(self.searchBtn)
+
+        self.clearBtn = QPushButton(Form)
+        self.clearBtn.setObjectName(u"clearBtn")
+
+        self.horizontalLayout_2.addWidget(self.clearBtn)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
@@ -79,6 +96,10 @@ class Ui_Form(object):
 
         self.horizontalLayout.addWidget(self.total)
 
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
         self.home = QPushButton(Form)
         self.home.setObjectName(u"home")
         self.home.setMaximumSize(QSize(30, 16777215))
@@ -115,35 +136,27 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
         self.add.setText(QCoreApplication.translate("Form", u"\u6dfb\u52a0", None))
+        self.refreshBtn.setText(QCoreApplication.translate("Form", u"\u5237\u65b0", None))
+        self.searchEdit.setPlaceholderText(QCoreApplication.translate("Form", u"\u641c\u7d22\u952e...", None))
+        self.searchBtn.setText(QCoreApplication.translate("Form", u"\u641c\u7d22", None))
+        self.clearBtn.setText(QCoreApplication.translate("Form", u"\u6e05\u9664", None))
         ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("Form", u"\u952e", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("Form", u"\u952e", None))
         ___qtablewidgetitem1 = self.tableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("Form", u"\u503c", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("Form", u"\u503c", None))
         ___qtablewidgetitem2 = self.tableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("Form", u"\u6570\u636e\u7c7b\u578b", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("Form", u"\u6570\u636e\u7c7b\u578b", None))
         ___qtablewidgetitem3 = self.tableWidget.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("Form", u"\u6570\u636e\u957f\u5ea6", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("Form", u"\u6570\u636e\u957f\u5ea6", None))
         ___qtablewidgetitem4 = self.tableWidget.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("Form", u"\u6709\u6548\u671f", None));
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("Form", u"\u6709\u6548\u671f", None))
         ___qtablewidgetitem5 = self.tableWidget.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("Form", u"\u64cd\u4f5c", None));
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("Form", u"\u64cd\u4f5c", None))
         self.label.setText(QCoreApplication.translate("Form", u"/", None))
         self.total.setText(QCoreApplication.translate("Form", u"0", None))
-#if QT_CONFIG(statustip)
-        self.home.setStatusTip("")
-#endif // QT_CONFIG(statustip)
         self.home.setText(QCoreApplication.translate("Form", u"<<", None))
-#if QT_CONFIG(statustip)
-        self.previous.setStatusTip("")
-#endif // QT_CONFIG(statustip)
         self.previous.setText(QCoreApplication.translate("Form", u"<", None))
-#if QT_CONFIG(statustip)
-        self.next.setStatusTip("")
-#endif // QT_CONFIG(statustip)
         self.next.setText(QCoreApplication.translate("Form", u">", None))
-#if QT_CONFIG(statustip)
-        self.end.setStatusTip("")
-#endif // QT_CONFIG(statustip)
         self.end.setText(QCoreApplication.translate("Form", u">>", None))
     # retranslateUi
 
