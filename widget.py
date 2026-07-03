@@ -1,9 +1,11 @@
 # This Python file uses the following encoding: utf-8
 import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib'))
 
 from PySide6.QtWidgets import (
     QApplication, QWidget, QDialog, QMessageBox, QTreeWidgetItem,
-    QMenu, QTableWidgetItem, QWidget as QtWidget, QPushButton, QHBoxLayout
+    QMenu, QTableWidgetItem, QWidget as QtWidget, QPushButton, QHBoxLayout, QStatusBar
 )
 from PySide6.QtCore import QThread, Signal, Qt
 
@@ -456,6 +458,12 @@ class Widget(QWidget):
         self.setWindowTitle("TkRedis")
 
         self.connections = {}
+
+        # Status bar
+        self.statusBar = QStatusBar()
+        self.statusBar.setFixedHeight(12)
+        self.ui.verticalLayout.addWidget(self.statusBar)
+
         self.load_threads = []
 
         # 设置 splitter 初始比例为 1:3
@@ -477,7 +485,7 @@ class Widget(QWidget):
             self.ui.tabWidget.removeTab(0)
 
     def set_status(self, message):
-        self.ui.statusLabel.setText(message)
+        self.statusBar.showMessage(message)
 
     def on_tab_close(self, index):
         self.ui.tabWidget.removeTab(index)
