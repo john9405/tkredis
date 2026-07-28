@@ -3,11 +3,11 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib'))
 
-from PySide6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QApplication, QWidget, QDialog, QMessageBox, QTreeWidgetItem,
     QMenu, QTableWidgetItem, QWidget as QtWidget, QPushButton, QHBoxLayout, QStatusBar
 )
-from PySide6.QtCore import QThread, Signal, Qt
+from PyQt5.QtCore import QThread, pyqtSignal, Qt
 
 from ui_form import Ui_Widget
 from conn import Ui_Dialog as Ui_ConnDialog
@@ -73,8 +73,8 @@ class RedisConnection:
 
 
 class LoadDbsThread(QThread):
-    loaded = Signal(object, object)
-    error = Signal(object, str)
+    loaded = pyqtSignal(object, object)
+    error = pyqtSignal(object, str)
 
     def __init__(self, conn):
         super().__init__()
@@ -94,8 +94,8 @@ class LoadDbsThread(QThread):
 
 
 class LoadKeysThread(QThread):
-    loaded = Signal(object, int, list)
-    error = Signal(object, int, str)
+    loaded = pyqtSignal(object, int, list)
+    error = pyqtSignal(object, int, str)
 
     def __init__(self, conn, db):
         super().__init__()
@@ -299,7 +299,7 @@ class KeyListWidget(QtWidget):
 
     def on_add(self):
         dialog = AddKeyDialog(self)
-        if dialog.exec() == QDialog.Accepted:
+        if dialog.exec_() == QDialog.Accepted:
             data = dialog.get_data()
             if not data['key']:
                 QMessageBox.warning(self, "错误", "键名不能为空")
@@ -385,7 +385,7 @@ class KeyListWidget(QtWidget):
             dialog.ui.textEdit.setPlainText(value)
             dialog.ui.spinBox.setValue(ttl)
 
-            if dialog.exec() == QDialog.Accepted:
+            if dialog.exec_() == QDialog.Accepted:
                 data = dialog.get_data()
 
                 if data['type'] == 'string':
@@ -492,7 +492,7 @@ class Widget(QWidget):
 
     def on_connect(self):
         dialog = ConnDialog(self)
-        if dialog.exec() == QDialog.Accepted:
+        if dialog.exec_() == QDialog.Accepted:
             host = dialog.ui.host.text().strip()
             port_str = dialog.ui.port.text().strip()
             username = dialog.ui.username.text().strip()
@@ -608,11 +608,11 @@ class Widget(QWidget):
         if item_type == 'server':
             disconnect_action = menu.addAction("断开连接")
             disconnect_action.triggered.connect(lambda: self.on_disconnect(item))
-            menu.exec(self.ui.treeWidget.mapToGlobal(pos))
+            menu.exec_(self.ui.treeWidget.mapToGlobal(pos))
         elif item_type == 'db':
             refresh_action = menu.addAction("刷新")
             refresh_action.triggered.connect(lambda: self.on_refresh_db(item))
-            menu.exec(self.ui.treeWidget.mapToGlobal(pos))
+            menu.exec_(self.ui.treeWidget.mapToGlobal(pos))
 
     def on_refresh_db(self, db_item):
         conn_name = db_item.data(0, 0x0101)
@@ -660,4 +660,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     widget = Widget()
     widget.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec_())

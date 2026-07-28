@@ -6,5 +6,5 @@
 
 ```
 pip install redis
-pip install pyside6
+pip install PyQt5
 ```
