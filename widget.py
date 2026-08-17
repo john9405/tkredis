@@ -10,20 +10,11 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import QThread, pyqtSignal, Qt
 
 from ui_form import Ui_Widget
-from conn import Ui_Dialog as Ui_ConnDialog
 from dialog import Ui_Dialog as Ui_AddKeyDialog
 from list import Ui_Form
+from conn_dialog import ConnDialog, ConnManageDialog
+from conn_store import ConnectionStore
 import redis
-
-
-class ConnDialog(QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.ui = Ui_ConnDialog()
-        self.ui.setupUi(self)
-        self.setWindowTitle("连接Redis")
-        self.ui.host.setText("localhost")
-        self.ui.port.setText("6379")
 
 
 class AddKeyDialog(QDialog):
@@ -458,6 +449,7 @@ class Widget(QWidget):
         self.setWindowTitle("TkRedis")
 
         self.connections = {}
+        self.conn_store = ConnectionStore()
 
         # Status bar
         self.statusBar = QStatusBar()
@@ -472,6 +464,7 @@ class Widget(QWidget):
 
         self.ui.treeWidget.setHeaderLabel("服务器")
         self.ui.conn.clicked.connect(self.on_connect)
+        self.ui.manage.clicked.connect(self.on_manage)
         self.ui.treeWidget.itemExpanded.connect(self.on_item_expanded)
         self.ui.treeWidget.itemDoubleClicked.connect(self.on_item_double_clicked)
         self.ui.treeWidget.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -491,58 +484,88 @@ class Widget(QWidget):
         self.ui.tabWidget.removeTab(index)
 
     def on_connect(self):
-        dialog = ConnDialog(self)
+        dialog = ConnDialog(self.conn_store, self)
         if dialog.exec_() == QDialog.Accepted:
-            host = dialog.ui.host.text().strip()
-            port_str = dialog.ui.port.text().strip()
-            username = dialog.ui.username.text().strip()
-            password = dialog.ui.password.text().strip()
+            self.connect_to(dialog.get_data())
 
-            if not host:
-                QMessageBox.warning(self, "错误", "主机地址不能为空")
-                return
+    def on_manage(self):
+        dialog = ConnManageDialog(self.conn_store, self)
+        dialog.connect_requested.connect(lambda conn: self.connect_to(conn, remember=False))
+        dialog.exec_()
 
-            try:
-                port = int(port_str) if port_str else 6379
-            except ValueError:
-                QMessageBox.warning(self, "错误", "端口号必须是数字")
-                return
+    def connect_to(self, data, remember=True):
+        host = data["host"]
+        port_str = str(data["port"])
+        username = data["username"]
+        password = data["password"]
 
-            conn_name = f"{host}:{port}"
-            self.set_status("连接中...")
+        if not host:
+            QMessageBox.warning(self, "错误", "主机地址不能为空")
+            return
 
-            try:
-                conn = RedisConnection(conn_name, host, port,
-                                       username if username else None,
-                                       password if password else None)
-                conn.get_client(0).ping()
+        try:
+            port = int(port_str) if port_str else 6379
+        except ValueError:
+            QMessageBox.warning(self, "错误", "端口号必须是数字")
+            return
 
-                self.connections[conn_name] = conn
+        conn_name = data["name"] or f"{host}:{port}"
+        self.set_status("连接中...")
 
-                exists = False
-                for i in range(self.ui.treeWidget.topLevelItemCount()):
-                    if self.ui.treeWidget.topLevelItem(i).data(0, 0x0101) == conn_name:
-                        exists = True
-                        break
+        try:
+            conn = RedisConnection(conn_name, host, port,
+                                   username if username else None,
+                                   password if password else None)
+            conn.get_client(0).ping()
 
-                if not exists:
-                    server_item = QTreeWidgetItem(self.ui.treeWidget)
-                    server_item.setText(0, conn_name)
-                    server_item.setData(0, 0x0100, 'server')
-                    server_item.setData(0, 0x0101, conn_name)
-                    server_item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
+            # 同一 host:port 重复连接时替换旧节点
+            for i in range(self.ui.treeWidget.topLevelItemCount() - 1, -1, -1):
+                item = self.ui.treeWidget.topLevelItem(i)
+                if item.data(0, 0x0103) == host and item.data(0, 0x0104) == port:
+                    self._remove_server(item)
 
-                self.set_status(f"已连接到 {conn_name}")
+            self.connections[conn_name] = conn
 
-            except redis.AuthenticationError:
-                self.set_status("连接失败: 认证失败")
-                QMessageBox.critical(self, "错误", "认证失败，请检查用户名和密码")
-            except redis.ConnectionError as e:
-                self.set_status("连接失败")
-                QMessageBox.critical(self, "错误", f"无法连接到Redis服务器: {e}")
-            except Exception as e:
-                self.set_status("连接失败")
-                QMessageBox.critical(self, "错误", f"连接失败: {e}")
+            server_item = QTreeWidgetItem(self.ui.treeWidget)
+            server_item.setText(0, conn_name)
+            server_item.setData(0, 0x0100, 'server')
+            server_item.setData(0, 0x0101, conn_name)
+            server_item.setData(0, 0x0103, host)
+            server_item.setData(0, 0x0104, port)
+            server_item.setChildIndicatorPolicy(QTreeWidgetItem.ShowIndicator)
+
+            # 记住连接(内容经 AES 加密写入 ~/.config/redis.json)
+            if remember:
+                self.conn_store.upsert({
+                    "name": conn_name,
+                    "host": host,
+                    "port": port,
+                    "username": username,
+                    "password": password,
+                })
+
+            self.set_status(f"已连接到 {conn_name}")
+
+        except redis.AuthenticationError:
+            self.set_status("连接失败: 认证失败")
+            QMessageBox.critical(self, "错误", "认证失败，请检查用户名和密码")
+        except redis.ConnectionError as e:
+            self.set_status("连接失败")
+            QMessageBox.critical(self, "错误", f"无法连接到Redis服务器: {e}")
+        except Exception as e:
+            self.set_status("连接失败")
+            QMessageBox.critical(self, "错误", f"连接失败: {e}")
+
+    def _remove_server(self, server_item):
+        """关闭并移除服务器树节点(不影响已保存的连接记录)。"""
+        conn_name = server_item.data(0, 0x0101)
+        if conn_name in self.connections:
+            self.connections[conn_name].close()
+            del self.connections[conn_name]
+
+        index = self.ui.treeWidget.indexOfTopLevelItem(server_item)
+        if index >= 0:
+            self.ui.treeWidget.takeTopLevelItem(index)
 
     def on_item_expanded(self, item):
         item_type = item.data(0, 0x0100)
@@ -608,6 +631,8 @@ class Widget(QWidget):
         if item_type == 'server':
             disconnect_action = menu.addAction("断开连接")
             disconnect_action.triggered.connect(lambda: self.on_disconnect(item))
+            delete_record_action = menu.addAction("删除连接记录")
+            delete_record_action.triggered.connect(lambda: self.on_delete_connection_record(item))
             menu.exec_(self.ui.treeWidget.mapToGlobal(pos))
         elif item_type == 'db':
             refresh_action = menu.addAction("刷新")
@@ -634,16 +659,24 @@ class Widget(QWidget):
 
     def on_disconnect(self, server_item):
         conn_name = server_item.data(0, 0x0101)
-
-        if conn_name in self.connections:
-            self.connections[conn_name].close()
-            del self.connections[conn_name]
-
-        index = self.ui.treeWidget.indexOfTopLevelItem(server_item)
-        if index >= 0:
-            self.ui.treeWidget.takeTopLevelItem(index)
-
+        self._remove_server(server_item)
         self.set_status(f"已断开: {conn_name}")
+
+    def on_delete_connection_record(self, server_item):
+        host = server_item.data(0, 0x0103)
+        port = server_item.data(0, 0x0104)
+
+        reply = QMessageBox.question(
+            self, "确认删除",
+            f"确定要删除连接记录 '{server_item.text(0)}' 吗?",
+            QMessageBox.Yes | QMessageBox.No)
+        if reply != QMessageBox.Yes:
+            return
+
+        if self.conn_store.delete(host, port):
+            self.set_status(f"已删除连接记录: {server_item.text(0)}")
+        else:
+            self.set_status("没有找到对应的连接记录")
 
     def closeEvent(self, event):
         for thread in self.load_threads:

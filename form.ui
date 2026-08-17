@@ -55,6 +55,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="manage">
+        <property name="text">
+         <string>连接管理</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="pushButton">
         <property name="text">
          <string>帮助</string>
@@ -71,7 +78,7 @@
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
+         <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -87,7 +94,7 @@
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
-      <enum>Qt::Orientation::Horizontal</enum>
+      <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QTreeWidget" name="treeWidget">
       <property name="minimumSize">
